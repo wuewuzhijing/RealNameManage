@@ -1,6 +1,7 @@
 <template>
   <div class="login">
     <div class="middle">
+      <i class="icon iconfont icon-zhiliang-xianxing"></i>
       <h3 class="title"  >人像识别登记系统</h3>
       <el-form :model="ruleFormLogin" :rules="ruleLogin" ref="ruleFormLogin" label-position="left" label-width="0px"  class="login-container">
         <el-form-item prop="account">
@@ -92,18 +93,26 @@ export default {
         left: 0;
     }
 
+
+
     .middle{
       position:relative;
       top:50%;
       margin-top: -250px;
     }
 
+    .icon{
+      color: #fff;
+      font-size: 26px;
+    }
+
     .title {
-        text-align: center;
-        font-family: PingFangSC-Semibold;
-        font-size: 22px;
-        color: #FFFFFF;
-        letter-spacing: -0.51px;
+      display: inline;
+      text-align: center;
+      font-family: PingFangSC-Semibold;
+      font-size: 22px;
+      color: #FFFFFF;
+      letter-spacing: -0.51px;
     }
     .login-container {
         -webkit-border-radius: 10px;

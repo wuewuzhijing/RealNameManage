@@ -1,13 +1,18 @@
 <template>
   <div id="app">
     <!--<img src="./assets/logo.png">-->
-    <router-view/>
+     <leftnav></leftnav>
+     <router-view/>
   </div>
 </template>
 
 <script>
+  import leftnav from '@/components/common/nav'
 export default {
-  name: 'app'
+  name: 'app',
+  components:{
+    leftnav
+  }
 }
 </script>
 
@@ -17,7 +22,5 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
