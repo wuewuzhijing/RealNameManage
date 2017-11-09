@@ -2,7 +2,7 @@
   <div class="login">
     <div class="middle">
       <i class="icon iconfont icon-zhiliang-xianxing"></i>
-      <h3 class="title"  >人像识别登记系统</h3>
+      <h3 class="title"  >人脸识别系统</h3>
       <el-form :model="ruleFormLogin" :rules="ruleLogin" ref="ruleFormLogin" label-position="left" label-width="0px"  class="login-container">
         <el-form-item prop="account">
           <el-input type="text" v-model="ruleFormLogin.account" auto-complete="off" placeholder="账号" ref="inputUsername"></el-input>
@@ -46,8 +46,15 @@ export default {
   mounted () {
     this.getBackgroundBY();
   },
+//  computed: {
+//    dynamicSegment () {
+//      alert("登录成功！获取酒店id=" +  this.$route.params.id );
+//      return this.$route.params.id
+//    }
+//  },
   methods: {
     loginSubmit () {
+
       var username = this.$refs.inputUsername.value;
       var password = this.$refs.inputPassword.value;  //获取输入框中的内容
 
@@ -56,11 +63,19 @@ export default {
 //      var isLoginSusseed;
       //获取用户数据
 //      axios.get('static/data/login.json')
+      if(username == ""){
+//        alert("帐号不能为空");
+        return
+      }
+      if(password == ""){
+//        alert("密码不能为空" );
+        return
+      }
       axios.get('https://dev.bookingyun.com/KmsMaster/manager/login?account=hotel_kk&password=123456')
-      .then(function (response) {
+      .then(response=>{
         console.log('登陆成功！');
         var loginData = response.data.hotelId;
-        alert("登录成功！获取酒店id=" +  loginData );
+        this.$router.push({ path: 'HelloWorld/' + loginData })
 //        $.each(loginData , function (index , item) {
 //          console.log(item.account,item.password)
 //          if (item.username === username && item.password === password) {
@@ -91,6 +106,7 @@ export default {
         position: absolute;
         top: 0;
         left: 0;
+        text-align: center;
     }
 
 

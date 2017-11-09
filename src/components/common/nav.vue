@@ -3,7 +3,7 @@
     <ul>
       <li  v-for="goods in type0Goods">
         <i class="icon iconfont icon-zhiliang-xianxing"></i>
-        <dev>{{goods.goodsName}}</dev>
+        <div>{{goods.goodsName}}</div>
       </li>
     </ul>
   </div>
