@@ -39,15 +39,18 @@
           </el-option>
         </el-select>
 
-        <span class="hotelName">酒店：</span>
-        <el-select v-model="value_hotel" placeholder="请选择">
-          <el-option
-            v-for="item in hotel"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
+        <div class="hotelName">
+          <span >酒店：</span>
+          <el-select v-model="value_hotel" placeholder="请选择">
+            <el-option
+              v-for="item in hotel"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </div>
+
       </div>
 
       <div class="middle_bottom">
@@ -76,8 +79,11 @@
           </el-option>
         </el-select>
 
-        <span class="input_text">关键字：</span>
-        <el-input class="input" v-model="input" placeholder="请输入内容"></el-input>
+        <div class="input_text">
+          <span >关键字：</span>
+          <el-input class="input" v-model="input" placeholder="请输入内容"></el-input>
+        </div>
+
         <el-button class="button_search" >搜索</el-button>
 
       </div>
@@ -85,7 +91,7 @@
     <div class="bottom_section" >
       <el-table
         :data="tableData"
-        style="width: 1203px; text-align: center; fixed:right; border: 1px solid #e5e5e5" >
+        style="width: 1203px; text-align: center; fixed:right; border: 1px solid #e5e5e5;"  >
         <el-table-column
           prop="date"
           label="日期"
@@ -106,9 +112,20 @@
           align="center" >
         </el-table-column>
 
-        <el-table-column prop="address"     label="日期" width="200px" align="center" ></el-table-column>
+        <el-table-column
+          prop="address"
+          label="日期"
+          width="200px"
+          align="center"
+        ></el-table-column>
 
         <el-table-column width="200px" align="center"  label="日期">
+          <template slot-scope="scope" >
+            <img src="../../assets/logo.png" style="width: 50px;height: 50px;">
+          </template>
+        </el-table-column>
+
+        <el-table-column width="200px" align="center"  label="日期" fixed="right">
           <template slot-scope="scope" >
             <el-button
               size="mini"
@@ -117,20 +134,18 @@
               @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
-        <el-table-column width="200px" align="center"  label="日期">
-          <template slot-scope="scope" >
-            <img src="../../assets/logo.png">
-          </template>
-        </el-table-column>
 
-        <el-table-column width="1px">
-          <el-table-column  width="1px">
-          </el-table-column>
-        </el-table-column>
+        <!--<el-table-column width="1px">-->
+          <!--<el-table-column  width="1px">-->
+          <!--</el-table-column>-->
+        <!--</el-table-column>-->
 
       </el-table>
     </div>
 
+    <div class="page_section" >
+      <el-button round>上一页</el-button>  <el-button round>下一页</el-button>
+    </div>
   </div>
 </template>
 
@@ -275,17 +290,18 @@ export default {
   }
 
   .middle_section{
-    padding: 30px 50px;
+    padding: 20px 50px;
   }
 
   .middle_top{
-    width: 80%;
   }
 
   .middle_bottom{
-    padding: 30px 0;
+    margin-top: 10px;
   }
+
   .hotelName{
+    display: inline-block;
     margin-left: 100px;
   }
 
@@ -298,6 +314,7 @@ export default {
   }
 
   .input_text{
+    display: inline-block;
     margin-left: 100px;
   }
 
@@ -308,12 +325,36 @@ export default {
 
   .button_search{
     margin-left: 100px;
+    margin-top: 0px;
     padding: 10px 30px;
+
   }
 
   .bottom_section{
-    padding: 50px;
+    padding: 10px 50px;
   }
 
+  .page_section{
+    padding: 20px 50px 50px;
+    text-align: center;
+  }
 
+  @media screen and  (max-width:1500px){
+    .button_search{
+      margin-top: 20px;
+      margin-left: 20px;
+      padding: 10px 30px;
+    }
+
+    .hotelName{
+      margin-top: 20px;
+      margin-left: 100px;
+    }
+  }
+</style>
+
+<style>
+  .el-table th.is-leaf {
+    background-color: #e5e5e5 !important;
+  }
 </style>
