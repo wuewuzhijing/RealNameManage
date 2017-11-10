@@ -114,7 +114,7 @@
           </el-table-column>
 
 
-          <el-table-column width="150px" align="center"  label="证件照">
+          <el-table-column width="100px" align="center"  label="证件照">
             <template slot-scope="scope" >
               <img :src="'data:image/jpg;base64,' + scope.row.identPhoto" height="50">
             </template>
@@ -126,7 +126,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column width="150px" align="center"  label="现场照片">
+          <el-table-column width="100px" align="center"  label="现场照片">
             <template slot-scope="scope" >
               <img :src="'data:image/jpg;base64,' + scope.row.cameraPhoto" height="50">
             </template>
@@ -237,24 +237,27 @@
       },
       value_time: '',
       input: '',
-      tableData: [{
-        insertDate: '2016-05-02',
-        identName: '王小虎',
-        identNo:"45688845145384513",
-        compareResult:"通过",
-        roomNum:"1056",
-        identPhoto: "",
-        cameraPhoto:""
-      },{
-        insertDate: '2016-05-02',
-        identName: '王小虎',
-        identNo:"45688845145384513",
-        compareResult:"通过",
-        roomNum:"1056",
-        identPhoto: "",
-        cameraPhoto:""
-      }],
-      urlDate: require("../../assets/logo.png")
+      tableData: [
+//        {
+//        insertDate: '2016-05-02',
+//        identName: '王小虎',
+//        identNo:"45688845145384513",
+//        compareResult:"通过",
+//        roomNum:"1056",
+//        identPhoto: "",
+//        cameraPhoto:""
+//      },{
+//        insertDate: '2016-05-02',
+//        identName: '王小虎',
+//        identNo:"45688845145384513",
+//        compareResult:"通过",
+//        roomNum:"1056",
+//        identPhoto: "",
+//        cameraPhoto:""
+//      }
+      ],
+      urlDate: require("../../assets/logo.png"),
+      pageIndex:0
     }
   },
   methods:{
@@ -263,12 +266,18 @@
     },
     search:function () {
 
-
-
-      axios.get('https://dev.bookingyun.com/KmsMaster/ident/getIdentList?pageIndex=0&pageSize=10')
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+      console.log('https://dev.bookingyun.com/KmsMaster/ident/getIdentList?pageIndex=' + this.pageIndex+ '&pageSize=10');
+      axios.get('https://dev.bookingyun.com/KmsMaster/ident/getIdentList?pageIndex=' + this.pageIndex  + '&pageSize=10')
         .then(response=>{
           console.log('获取人脸识别数据成功');
           this.tableData = response.data.list;
+
           var identName = response.data.list[0].identName;
           console.log(identName)
           loading.close();
@@ -284,6 +293,14 @@
 
   },
   mounted () {
+    var localTableData = JSON.parse(sessionStorage.getItem('tableData'));
+    console.log("有缓存")
+    if(localTableData){
+      console.log("有缓存")
+      this.tableData = localTableData;
+      return
+    }
+
     const loading = this.$loading({
       lock: true,
       text: 'Loading',
@@ -293,6 +310,7 @@
     axios.get('https://dev.bookingyun.com/KmsMaster/ident/getIdentList?pageIndex=0&pageSize=10')
       .then(response=>{
         this.tableData = response.data.list;
+        sessionStorage.setItem('tableData',JSON.stringify(response.data.list));
         var identName = response.data.list[0].identName;
         loading.close();
       })
