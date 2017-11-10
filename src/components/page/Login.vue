@@ -75,7 +75,7 @@ export default {
       .then(response=>{
         console.log('登陆成功！');
         var loginData = response.data.hotelId;
-        this.$router.push({ path: 'HelloWorld/' + loginData })
+        this.$router.push({ path: 'Main/' + loginData })
 //        $.each(loginData , function (index , item) {
 //          console.log(item.account,item.password)
 //          if (item.username === username && item.password === password) {

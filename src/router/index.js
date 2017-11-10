@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/page/HelloWorld'
+import Main from '@/components/page/Main'
 import Login from '@/components/page/Login'
 
 Vue.use(Router)
@@ -9,8 +9,8 @@ export default new Router({
   routes: [
     // {
     //   path: '/',
-    //   name: 'Hello',
-    //   component: HelloWorld
+    //   name: 'Main',
+    //   component: Main
     // },
     // {
     //   path: '/Login/:id',
@@ -25,9 +25,9 @@ export default new Router({
       component: Login
     },
     {
-      path: '/HelloWorld/:hotelId',
-      name: 'Hello',
-      component: HelloWorld
+      path: '/Main/:hotelId',
+      name: 'Main',
+      component: Main
     }
   ]
 })
