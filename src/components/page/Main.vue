@@ -5,7 +5,7 @@
       <h3 class="title"  >人脸识别系统</h3>
       <div class="top_left">
         <span class="user">kk_hotel</span>
-        <el-button class="exit" type="text" onclick="isLogin" @click.native.prevent="isLogin">退出</el-button>
+        <el-button class="exit" type="text" @click.native.prevent="isLogin">退出</el-button>
       </div>
     </div>
 
@@ -73,7 +73,7 @@
           <span class="state_text">状态：</span>
           <el-select class="state_select" v-model="value_state" placeholder="请选择">
             <el-option
-              v-for="item in hotel"
+              v-for="item in compareResult"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -82,10 +82,10 @@
 
           <div class="input_text">
             <span >关键字：</span>
-            <el-input class="input" v-model="input" placeholder="请输入内容"></el-input>
+            <el-input class="input_keyword" v-model="input"  placeholder="请输入内容"></el-input>
           </div>
 
-          <el-button class="button_search" @click.native="search" >搜索</el-button>
+          <el-button class="button_search" @click.native="searchBtn" >搜索</el-button>
 
         </div>
       </div>
@@ -116,7 +116,7 @@
 
           <el-table-column width="100px" align="center"  label="证件照">
             <template slot-scope="scope" >
-              <img :src="'data:image/jpg;base64,' + scope.row.identPhoto" height="50">
+              <img :src="scope.row.identPhotoUrl" height="50">
             </template>
           </el-table-column>
 
@@ -128,31 +128,54 @@
 
           <el-table-column width="100px" align="center"  label="现场照片">
             <template slot-scope="scope" >
-              <img :src="'data:image/jpg;base64,' + scope.row.cameraPhoto" height="50">
+              <img :src="scope.row.cameraPhotoUrl" height="50">
             </template>
           </el-table-column>
 
           <el-table-column
-            prop="compareResult"
             label="状态"
             width="150px"
             align="center"
-          ></el-table-column>
+          >
+            <template slot-scope="scope">
+              <span v-if="scope.row.compareResult === 'success_manual'" style="color: green">人工通过</span>
+              <span v-else-if="scope.row.compareResult === 'success'" style="color: green" >通过</span>
+              <span v-else style="color: red">失败</span>
+            </template>
+
+          </el-table-column>
 
           <el-table-column
             prop="roomNum"
             label="房间号"
-            width="150px"
+            width="100px"
             align="center"
-          ></el-table-column>
+          >
+            <template slot-scope="scope">
+              <el-input class="input_room" v-model=scope.row.roomNo placeholder="房间号" @change="roomChange" value="" ></el-input>
+            </template>
+
+          </el-table-column>
 
           <el-table-column width="150px" align="center"  label="操作" >
             <template slot-scope="scope" >
               <el-button
+                v-if="scope.row.policeUploadResult == '2'"
+                size="mini"
+                type="text"
+                style="width: 80px;"
+                disabled>已上传</el-button>
+              <el-button
+                v-else-if="scope.row.compareResult == 'success'||scope.row.compareResult =='success_manual'"
+                size="mini"
+                style="width: 80px;"
+                @click.native="sendCompareResult(scope.$index, scope.row)">上传</el-button>
+              <el-button
+                v-else
                 size="mini"
                 type="danger"
-                style="width: 100px;"
-                @click="handleDelete(scope.$index, scope.row)">通过</el-button>
+                style="width: 80px;"
+                @click.native="personVerify(scope.$index, scope.row)">人工验证</el-button>
             </template>
           </el-table-column>
 
@@ -160,7 +183,8 @@
       </div>
 
       <div class="page_section" >
-        <el-button round>上一页</el-button>  <el-button round>下一页</el-button>
+        <el-button round @click.native="pageUp">上一页</el-button>
+        <el-button round @click.native="pageDown">下一页</el-button>
       </div>
 
     </div>
@@ -168,7 +192,7 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import net from "../../net"
   export default {
   data() {
     return {
@@ -225,6 +249,16 @@
         value: '选项5',
         label: '富士康大酒店'
       }],
+      compareResult: [{
+        value: '选项1',
+        label: '成功'
+      }, {
+        value: '选项2',
+        label: '失败'
+      }, {
+        value: '选项3',
+        label: '人工验证'
+      }],
       value_province: '广东省',
       value_city: '深圳市',
       value_address: '福田区',
@@ -235,27 +269,9 @@
           return time.getTime() > Date.now();
         }
       },
-      value_time: '',
+      value_time:{},
       input: '',
-      tableData: [
-//        {
-//        insertDate: '2016-05-02',
-//        identName: '王小虎',
-//        identNo:"45688845145384513",
-//        compareResult:"通过",
-//        roomNum:"1056",
-//        identPhoto: "",
-//        cameraPhoto:""
-//      },{
-//        insertDate: '2016-05-02',
-//        identName: '王小虎',
-//        identNo:"45688845145384513",
-//        compareResult:"通过",
-//        roomNum:"1056",
-//        identPhoto: "",
-//        cameraPhoto:""
-//      }
-      ],
+      tableData: [],
       urlDate: require("../../assets/logo.png"),
       pageIndex:0
     }
@@ -265,58 +281,119 @@
       this.$router.push({ path: '/' })
     },
     search:function () {
-
-      const loading = this.$loading({
+      let self = this; // 定义一个变量指向vue实例
+      const loading = self.$loading({
         lock: true,
         text: 'Loading',
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      console.log('https://dev.bookingyun.com/KmsMaster/ident/getIdentList?pageIndex=' + this.pageIndex+ '&pageSize=10');
-      axios.get('https://dev.bookingyun.com/KmsMaster/ident/getIdentList?pageIndex=' + this.pageIndex  + '&pageSize=10')
-        .then(response=>{
-          console.log('获取人脸识别数据成功');
-          this.tableData = response.data.list;
 
-          var identName = response.data.list[0].identName;
-          console.log(identName)
-          loading.close();
-        })
-        .catch(function (error) {
-          console.log(error);
-          console.log('登陆失败！');
-          loading.close();
-        })
+      net.getRquery('/ident/getIdentList', {
+        pageIndex: self.pageIndex,
+        pageSize:10,
+//        compareBrand:"鑫鸿"
+      },function sucFn(response) {
+        loading.close();
+        console.log('获取人脸识别数据成功');
+        if(response.data.list && response.data.list.length > 0 ){
+          self.tableData = response.data.list;
+          sessionStorage.setItem('tableData',JSON.stringify(response.data.list));
+        }else{
+          alert("未查询到数据")
+        }
+      },function errFn(response) {
+        console.log('登陆失败！');
+        loading.close();
+      })
+    },
 
+    searchBtn:function () {
+//      var time = Date.now();
+//      console.log("时间" + time.format('yyyy-MM-dd h:m:s'))
+      this.pageIndex = 0;
+      this.search();
+    },
+    pageUp:function () {
+      if(this.pageIndex > 0){
+        this.pageIndex += -1;
+        this.search();
+      }
 
+    },
+    pageDown:function () {
+      this.pageIndex += 1;
+      this.search();
+
+    },
+
+    sendCompareResult:function (index,itemContent) {
+      let self = this; // 定义一个变量指向vue实例
+      if(itemContent.roomNo == "" || itemContent.roomNo == null){
+        console.log(itemContent.roomNo);
+        alert("房间号不能为空")
+        return
+      }
+
+      const loading = self.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+
+      net.getRquery('/ident/updatePoliceUploadResult', {
+        id: itemContent.id,
+        policeUploadResult:"2",
+        roomNo:itemContent.roomNo
+      },function sucFn(response) {
+        console.log('上传比对结果成功');
+        loading.close();
+      },function errFn(response) {
+        console.log('上传比对结果失败！');
+        loading.close();
+      })
+    },
+
+    personVerify:function (index,itemContent) {
+      let self = this; // 定义一个变量指向vue实例
+      const loading = self.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+
+      net.getRquery('/ident/updateCompareResult', {
+        id: itemContent.id,
+        compareResult:"success_manual",
+      },function sucFn(response) {
+        console.log('人工验证成功');
+        loading.close();
+      },function errFn(response) {
+        console.log('人工验证失败！');
+        loading.close();
+      })
+
+    },
+
+    roomChange:function () {
+      console.log("被改变");
     }
+
 
   },
   mounted () {
+    let self = this; // 定义一个变量指向vue实例
     var localTableData = JSON.parse(sessionStorage.getItem('tableData'));
-    console.log("有缓存")
-    if(localTableData){
+    console.log("有缓存");
+    console.log(localTableData);
+    if(localTableData && localTableData.length > 0){
       console.log("有缓存")
-      this.tableData = localTableData;
+      self.tableData = localTableData;
       return
     }
-
-    const loading = this.$loading({
-      lock: true,
-      text: 'Loading',
-      spinner: 'el-icon-loading',
-      background: 'rgba(0, 0, 0, 0.7)'
-    });
-    axios.get('https://dev.bookingyun.com/KmsMaster/ident/getIdentList?pageIndex=0&pageSize=10')
-      .then(response=>{
-        this.tableData = response.data.list;
-        sessionStorage.setItem('tableData',JSON.stringify(response.data.list));
-        var identName = response.data.list[0].identName;
-        loading.close();
-      })
-      .catch(function (error) {
-        loading.close();
-      })
+    this.search();
   },
 }
 </script>
@@ -324,7 +401,7 @@
 <style scoped>
 
   .body{
-    width: 1440px;
+    width: 1360px;
     margin:0 auto;
   }
 
@@ -386,17 +463,22 @@
   }
 
   .state_select{
-    width: 100px;
+    width: 120px;
   }
+
 
   .input_text{
     display: inline-block;
-    margin-left: 100px;
+    margin-left: 80px;
   }
 
-  .input{
+  .input_keyword{
     display: inline-block;
     width: auto;
+  }
+
+  .input_room{
+
   }
 
   .button_search{
@@ -427,4 +509,10 @@
   .el-table th.is-leaf {
     background-color: #e5e5e5 !important;
   }
+
+  .state_select{
+    color: red;
+    font-size: 50px;
+  }
+
 </style>

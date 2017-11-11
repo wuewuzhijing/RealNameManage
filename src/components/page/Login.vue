@@ -20,9 +20,7 @@
 </template>
 
 <script>
-  /* eslint-disable no-unused-vars */
-
-  import axios from 'axios';
+  import net from "../../net"
 export default {
   data () {
     return {
@@ -46,49 +44,35 @@ export default {
   mounted () {
     this.getBackgroundBY();
   },
-//  computed: {
-//    dynamicSegment () {
-//      alert("登录成功！获取酒店id=" +  this.$route.params.id );
-//      return this.$route.params.id
-//    }
-//  },
   methods: {
     loginSubmit () {
-
+      let self = this; // 定义一个变量指向vue实例
       var username = this.$refs.inputUsername.value;
       var password = this.$refs.inputPassword.value;  //获取输入框中的内容
 
       console.log(username);
       console.log(password);
-//      var isLoginSusseed;
-      //获取用户数据
-//      axios.get('static/data/login.json')
+
       if(username == ""){
-//        alert("帐号不能为空");
         return
       }
       if(password == ""){
-//        alert("密码不能为空" );
         return
       }
-      axios.get('https://dev.bookingyun.com/KmsMaster/manager/login?account=hotel_kk&password=123456')
-      .then(response=>{
+
+      net.getRquery('/manager/login', {
+        account: username,
+        password:password
+      },function sucFn(response) {
+        console.log(response);
         console.log('登陆成功！');
         var loginData = response.data.hotelId;
-        this.$router.push({ path: 'Main/' + loginData })
-//        $.each(loginData , function (index , item) {
-//          console.log(item.account,item.password)
-//          if (item.username === username && item.password === password) {
-//            console.log('登陆成功！');
-//            console.log('判断了')
-//          }
-//          console.log('kfdkfkdkf')
-//        })
-      })
-      .catch(function (error) {
-        console.log(error);
+        self.$router.push({ path: 'Main/' + loginData })
+      },function errFn(response) {
+        alert(response.data.returnMessage)
         console.log('登陆失败！');
       })
+
     },
     getBackgroundBY () {
       console.log('被执行');
