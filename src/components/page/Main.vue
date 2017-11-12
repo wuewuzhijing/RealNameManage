@@ -193,6 +193,7 @@
 
 <script>
   import net from "../../net"
+  import util from "../../utils"
   export default {
   data() {
     return {
@@ -269,7 +270,7 @@
           return time.getTime() > Date.now();
         }
       },
-      value_time:{},
+      value_time:new Date(),
       input: '',
       tableData: [],
       urlDate: require("../../assets/logo.png"),
@@ -292,7 +293,7 @@
       net.getRquery('/ident/getIdentList', {
         pageIndex: self.pageIndex,
         pageSize:10,
-//        compareBrand:"鑫鸿"
+        compareBrand:"鑫鸿"
       },function sucFn(response) {
         loading.close();
         console.log('获取人脸识别数据成功');
@@ -309,8 +310,10 @@
     },
 
     searchBtn:function () {
-//      var time = Date.now();
-//      console.log("时间" + time.format('yyyy-MM-dd h:m:s'))
+      var time = this.value_time;
+      console.log(util.timeFormat("yyyy mm dd hh ii ss",time));
+//    .format('yyyy-MM-dd h:m:s')
+      console.log("时间" + time)
       this.pageIndex = 0;
       this.search();
     },
@@ -506,6 +509,7 @@
 </style>
 
 <style>
+
   .el-table th.is-leaf {
     background-color: #e5e5e5 !important;
   }
