@@ -22,4 +22,18 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.clearfix:after{
+  content:"";
+  display:block;
+  visibility:hidden;
+  height:0;
+  clear:both;
+}
+/*marginTop生效*/
+.befo:before, .afte:after {
+  content: '';
+  display: table;
+}
+
 </style>

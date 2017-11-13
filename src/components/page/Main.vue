@@ -1,8 +1,11 @@
 <template>
   <div class="main">
-    <div class="top-section">
-      <i class="icon iconfont icon-zhiliang-xianxing"></i>
-      <h3 class="title"  >人脸识别系统</h3>
+    <div class="top-section clearfix">
+      <div class="logo_left">
+        <i class="icon iconfont icon-zhiliang-xianxing"></i>
+        <h3 class="title"  >人脸识别系统</h3>
+      </div>
+
       <div class="top_left">
         <span class="user">kk_hotel</span>
         <el-button class="exit" type="text" @click.native.prevent="isLogin">退出</el-button>
@@ -432,28 +435,37 @@
   }
 
   .top-section{
-    width: 100%;
-    height: 70px;
     background: #0B6390;
     color: #fff;
-    overflow: hidden;
   }
-
-  .icon{
-    font-size: 20px;
+  .logo_left{
+    float: left;
+    font-size: 0;
+    vertical-align: middle;
+    height: 70px;
+  }
+  .logo_left .icon,
+  .logo_left .title{
+    display: inline-block;
+    vertical-align: middle;
+    height: 70px;
+    line-height: 70px;
+  }
+  .logo_left .icon{
+    font-size: 40px;
     color: #fff;
     margin-left: 50px;
   }
 
-  .title{
-    display: inline-block;
+  .logo_left .title{
+    font-size: 20px;
     color: #fff;
+    margin: 0 15px;
   }
 
   .top_left{
     float: right;
     margin-right: 50px;
-    height: 70px;
   }
 
   .exit{
