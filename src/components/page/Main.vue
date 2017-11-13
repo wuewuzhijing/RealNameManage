@@ -64,7 +64,7 @@
             </el-date-picker>
             <span>到</span>
             <el-date-picker
-              v-model="value_time"
+              v-model="value_time2"
               type="date"
               placeholder="选择日期"
               :picker-options="pickerOptions0">
@@ -82,15 +82,19 @@
 
           <div class="input_text">
             <span >关键字：</span>
-            <el-input class="input_keyword" v-model="input"  placeholder="请输入内容"></el-input>
+            <el-input class="input_keyword" v-model="input_keyword"  placeholder="请输入内容"></el-input>
           </div>
 
-          <el-button class="button_search" @click.native="searchBtn" >搜索</el-button>
+          <el-button class="button_search" @click.native="searchBtn"  :disabled="loading_state" >搜索</el-button>
 
         </div>
       </div>
       <div class="bottom_section" >
         <el-table
+          v-loading="loading_state"
+          element-loading-text="拼命加载中"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.8)"
           :data="tableData"
           style="width: auto; display:inline-block; text-align: center; fixed:right; border: 1px solid #e5e5e5;"  >
           <el-table-column
@@ -122,7 +126,7 @@
 
           <el-table-column width="50px" align="center"  label="">
             <template slot-scope="scope" >
-              <img src="../../assets/logo.png" style="width: 25px;height: 25px;">
+              <img src="../../assets/vs.png" style="width: 25px;height: 25px;">
             </template>
           </el-table-column>
 
@@ -175,7 +179,7 @@
                 size="mini"
                 type="danger"
                 style="width: 80px;"
-                @click.native="personVerify(scope.$index, scope.row)">人工验证</el-button>
+                @click.native="personVerify(scope.$index, scope.row)">人工通过</el-button>
             </template>
           </el-table-column>
 
@@ -251,27 +255,32 @@
         label: '富士康大酒店'
       }],
       compareResult: [{
-        value: '选项1',
+        value: '',
+        label: '全部'
+      },{
+        value: 'success',
         label: '成功'
       }, {
-        value: '选项2',
+        value: 'fail',
         label: '失败'
       }, {
-        value: '选项3',
-        label: '人工验证'
+        value: 'success_manual',
+        label: '人工通过'
       }],
       value_province: '广东省',
       value_city: '深圳市',
       value_address: '福田区',
       value_hotel:'富士康大酒店',
       value_state:"",
+      loading_state:true,
       pickerOptions0: {
         disabledDate(time) {
           return time.getTime() > Date.now();
         }
       },
-      value_time:new Date(),
-      input: '',
+      value_time:"",
+      value_time2:new Date(),
+      input_keyword: '',
       tableData: [],
       urlDate: require("../../assets/logo.png"),
       pageIndex:0
@@ -283,37 +292,47 @@
     },
     search:function () {
       let self = this; // 定义一个变量指向vue实例
-      const loading = self.$loading({
-        lock: true,
-        text: 'Loading',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      });
+//      const loading = self.$loading({
+//        lock: true,
+//        text: 'Loading',
+//        spinner: 'el-icon-loading',
+//        background: 'rgba(0, 0, 0, 0.7)'
+//      });
 
       net.getRquery('/ident/getIdentList', {
         pageIndex: self.pageIndex,
         pageSize:10,
+        startDate:self.value_time==""?"":util.timeFormat("yyyy mm dd hh ii ss",self.value_time),
+        endDate:self.value_time2==""?"":util.timeFormat("yyyy mm dd hh ii ss",self.value_time2),
+        compareResult:self.value_state,
+        queryWord:self.input_keyword,
         compareBrand:"鑫鸿"
       },function sucFn(response) {
-        loading.close();
+//        loading.close();
+        self.loading_state = false;
         console.log('获取人脸识别数据成功');
         if(response.data.list && response.data.list.length > 0 ){
           self.tableData = response.data.list;
           sessionStorage.setItem('tableData',JSON.stringify(response.data.list));
         }else{
-          alert("未查询到数据")
+          self.$message({
+            message: '加载数据失败',
+            type: 'warning'
+          });
         }
       },function errFn(response) {
-        console.log('登陆失败！');
-        loading.close();
+        self.loading_state = false
+        console.log(response);
+//        loading.close();
       })
     },
 
     searchBtn:function () {
-      var time = this.value_time;
-      console.log(util.timeFormat("yyyy mm dd hh ii ss",time));
+//      var time = this.value_time;
+//      console.log(util.timeFormat("yyyy mm dd hh ii ss",time));
 //    .format('yyyy-MM-dd h:m:s')
-      console.log("时间" + time)
+//      console.log("时间" + time)
+      this.loading_state = true
       this.pageIndex = 0;
       this.search();
     },
@@ -327,23 +346,25 @@
     pageDown:function () {
       this.pageIndex += 1;
       this.search();
-
     },
 
     sendCompareResult:function (index,itemContent) {
       let self = this; // 定义一个变量指向vue实例
       if(itemContent.roomNo == "" || itemContent.roomNo == null){
         console.log(itemContent.roomNo);
-        alert("房间号不能为空")
+        self.$message({
+          message: '房间号不能为空',
+          type: 'warning'
+        });
         return
       }
 
-      const loading = self.$loading({
-        lock: true,
-        text: 'Loading',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      });
+//      const loading = self.$loading({
+//        lock: true,
+//        text: 'Loading',
+//        spinner: 'el-icon-loading',
+//        background: 'rgba(0, 0, 0, 0.7)'
+//      });
 
       net.getRquery('/ident/updatePoliceUploadResult', {
         id: itemContent.id,
@@ -351,31 +372,33 @@
         roomNo:itemContent.roomNo
       },function sucFn(response) {
         console.log('上传比对结果成功');
-        loading.close();
+        self.tableData[index].policeUploadResult= "2";
+//        loading.close();
       },function errFn(response) {
         console.log('上传比对结果失败！');
-        loading.close();
+//        loading.close();
       })
     },
 
     personVerify:function (index,itemContent) {
       let self = this; // 定义一个变量指向vue实例
-      const loading = self.$loading({
-        lock: true,
-        text: 'Loading',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      });
+//      const loading = self.$loading({
+//        lock: true,
+//        text: 'Loading',
+//        spinner: 'el-icon-loading',
+//        background: 'rgba(0, 0, 0, 0.7)'
+//      });
 
       net.getRquery('/ident/updateCompareResult', {
         id: itemContent.id,
         compareResult:"success_manual",
       },function sucFn(response) {
         console.log('人工验证成功');
-        loading.close();
+        self.tableData[index].compareResult= "success_manual";
+//        loading.close();
       },function errFn(response) {
         console.log('人工验证失败！');
-        loading.close();
+//        loading.close();
       })
 
     },
@@ -387,15 +410,15 @@
 
   },
   mounted () {
-    let self = this; // 定义一个变量指向vue实例
-    var localTableData = JSON.parse(sessionStorage.getItem('tableData'));
-    console.log("有缓存");
-    console.log(localTableData);
-    if(localTableData && localTableData.length > 0){
-      console.log("有缓存")
-      self.tableData = localTableData;
-      return
-    }
+//    let self = this; // 定义一个变量指向vue实例
+//    var localTableData = JSON.parse(sessionStorage.getItem('tableData'));
+//    console.log("有缓存");
+//    console.log(localTableData);
+//    if(localTableData && localTableData.length > 0){
+//      console.log("有缓存")
+//      self.tableData = localTableData;
+//      return
+//    }
     this.search();
   },
 }
@@ -425,7 +448,6 @@
   .title{
     display: inline-block;
     color: #fff;
-
   }
 
   .top_left{
@@ -472,7 +494,7 @@
 
   .input_text{
     display: inline-block;
-    margin-left: 80px;
+    margin-left: 60px;
   }
 
   .input_keyword{
