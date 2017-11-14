@@ -1,15 +1,13 @@
 <template>
   <div class="modal" v-on:click="hide" v-if="message.show" >
-        <div class="box_wrap">
-          <div class="mask"></div>
-          <div class="box_cnt">
-            <div class="box_middle">
-              <img class="img_big" :src="message.msg1" >
-              <img class="img_vs" src="../../assets/vs.png" >
-              <img class="img_big" :src="message.msg2" >
-            </div>
-          </div>
+      <div class="mask"></div>
+      <div class="box_cnt">
+        <div class="box_middle">
+          <img class="img_big" :src="message.msg1" >
+          <img class="img_vs" src="../../assets/vs.png" >
+          <img class="img_big" :src="message.msg2" >
         </div>
+      </div>
   </div>
 </template>
 
@@ -52,19 +50,16 @@
 
 <style>
   .modal {
-    position: absolute;
+    position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
     top:0;
-    width: 100%;
-    height: 100%;
+    z-index: 88;
   }
-  .box_wrap{
-    /*position: relative;*/
-  }
-  .box_wrap .mask{
-    position: absolute;
+
+  .modal .mask{
+    position: fixed;
     left: 0;
     right: 0;
     top: 0;
@@ -76,26 +71,31 @@
     opacity: 0.6;
     filter: alpha(opacity=75);
   }
-  .box_wrap .box_cnt{
-    position: relative;
+  .modal .box_cnt{
+    position: absolute;
     left: 50%;
+    top: 50%;
     margin-left: -380px;
-    margin-top: 200px;
+    margin-top: -250px;
     width: 760px;
     height: 500px;
     z-index: 1001;
-    background-color: #fff;
+    background: #fff;
     border-radius: 8px;
   }
 
   .box_middle{
-    position: relative;
-    left: 50%;
-    bottom: -15%;
-    margin-left: -315px;
+    font-size: 0;
+    height: 500px;
+    line-height: 500px;
+    text-align: center;
   }
-
-  .img_big{
+  .box_middle .img_big,
+  .box_middle .img_vs{
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .box_middle .img_big{
     width: 160px;
     height: 220px;
     padding: 50px;
@@ -103,7 +103,7 @@
     border-radius: 3px;
   }
 
-  .img_vs{
+  .box_middle .img_vs{
     width: 50px;
     height: 50px;
     margin: 100px 20px;
