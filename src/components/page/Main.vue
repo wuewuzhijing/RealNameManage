@@ -109,7 +109,7 @@
           <el-table-column
             prop="identName"
             label="姓名"
-            width="100px"
+            width="130px"
             align="center" >
           </el-table-column>
 
@@ -123,7 +123,7 @@
 
           <el-table-column width="100px" align="center"  label="证件照">
             <template slot-scope="scope" >
-              <img :src="scope.row.identPhotoUrl" height="50">
+              <img :src="scope.row.identPhotoUrl" height="50" v-on:click="chickShowPhoto(scope.row)">
             </template>
           </el-table-column>
 
@@ -135,7 +135,7 @@
 
           <el-table-column width="100px" align="center"  label="现场照片">
             <template slot-scope="scope" >
-              <img :src="scope.row.cameraPhotoUrl" height="50">
+              <img :src="scope.row.cameraPhotoUrl" height="50" v-on:click="chickShowPhoto(scope.row)">
             </template>
           </el-table-column>
 
@@ -155,7 +155,7 @@
           <el-table-column
             prop="roomNum"
             label="房间号"
-            width="100px"
+            width="150px"
             align="center"
           >
             <template slot-scope="scope">
@@ -195,16 +195,24 @@
       </div>
 
     </div>
+
+    <!--<modal v-if="true"></modal>-->
+    <showphoto v-if="isShowPhoto" :message="msgData" ></showphoto>
+
   </div>
 </template>
 
 <script>
   import net from "../../net"
   import util from "../../utils"
+  import showphoto from '@/components/common/showphoto'
   export default {
+    components:{
+      showphoto
+    },
   data() {
     return {
-      name: 'HelloWorld',
+      msgData:{msg1:132,msg2:321,show:false},
       province: [{
         value: '选项1',
         label: '广东省'
@@ -286,7 +294,8 @@
       input_keyword: '',
       tableData: [],
       urlDate: require("../../assets/logo.png"),
-      pageIndex:0
+      pageIndex:0,
+      isShowPhoto:true
     }
   },
   methods:{
@@ -406,6 +415,13 @@
 
     },
 
+    chickShowPhoto:function (itemContent) {
+      console.log(itemContent);
+      this.msgData.msg1 = itemContent.identPhotoUrl;
+      this.msgData.msg2 = itemContent.cameraPhotoUrl;
+      this.msgData.show = true;
+    },
+
     roomChange:function () {
       console.log("被改变");
     }
@@ -423,6 +439,10 @@
 //      return
 //    }
     this.search();
+    console.log("路径" + this.$route.path)
+    console.log("路径" + this.$route.name)
+    console.log("路径" + this.$route.query.hotelId)
+
   },
 }
 </script>
@@ -515,7 +535,7 @@
   }
 
   .input_room{
-
+    width: 100px;
   }
 
   .button_search{
@@ -546,11 +566,6 @@
 
   .el-table th.is-leaf {
     background-color: #e5e5e5 !important;
-  }
-
-  .state_select{
-    color: red;
-    font-size: 50px;
   }
 
 </style>

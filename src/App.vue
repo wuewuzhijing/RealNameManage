@@ -2,6 +2,7 @@
   <div id="app">
     <!--<img src="./assets/logo.png">-->
      <!--<leftnav></leftnav>-->
+    <!--<p>{{$route.name}}</p> 可以接受到index.js中的name参数-->
      <router-view/>
   </div>
 </template>

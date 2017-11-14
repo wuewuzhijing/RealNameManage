@@ -25,7 +25,7 @@ export default new Router({
       component: Login
     },
     {
-      path: '/Main/:hotelId',
+      path: '/Main',
       name: 'Main',
       component: Main
     }
