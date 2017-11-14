@@ -1,8 +1,9 @@
 <template>
   <div class="login">
     <div class="middle">
-      <i class="icon iconfont icon-zhiliang-xianxing"></i>
-      <h3 class="title"  >人脸识别系统</h3>
+      <!--<i class="icon iconfont icon-zhiliang-xianxing"></i>-->
+      <!--<h3 class="title"  >人脸识别系统</h3>-->
+      <img class="icon" src="../../assets/logo.png"/>
       <el-form :model="ruleFormLogin" ref="ruleFormLogin" label-position="left" label-width="0px"  class="login-container">
         <el-form-item prop="account">
           <el-input type="text" v-model="ruleFormLogin.account" auto-complete="off" placeholder="账号" ref="inputUsername"></el-input>
@@ -98,6 +99,7 @@ export default {
     }
 
     .icon{
+      height: 40px;
       color: #fff;
       font-size: 26px;
     }
@@ -115,12 +117,12 @@ export default {
         border-radius: 10px;
         -moz-border-radius: 10px;
         background-clip: padding-box;
-        margin: 28px auto;
+        margin: 15px auto;
         width: 280px;
         height: 160px;
         padding: 40px 50px;
         background: #fff;
-        border: 1px solid #eaeaea;
+      border: 1px solid #eaeaea;
         /* box-shadow: 0 0 25px #cac6c6; */
     }
     .remember {

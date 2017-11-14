@@ -2,8 +2,8 @@
   <div class="main">
     <div class="top-section clearfix">
       <div class="logo_left">
-        <i class="icon iconfont icon-zhiliang-xianxing"></i>
-        <h3 class="title"  >人脸识别系统</h3>
+        <img class="icon" src="../../assets/logo.png"/>
+        <h3 class="title" v-if="true"  ></h3>
       </div>
 
       <div class="top_left">
@@ -472,7 +472,7 @@
     line-height: 70px;
   }
   .logo_left .icon{
-    font-size: 40px;
+    height: 40px;
     color: #fff;
     margin-left: 50px;
   }
