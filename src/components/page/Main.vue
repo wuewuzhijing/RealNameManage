@@ -7,7 +7,7 @@
       </div>
 
       <div class="top_left">
-        <span class="user">kk_hotel</span>
+        <span class="user">{{hotelName}}</span>
         <el-button class="exit" type="text" @click.native.prevent="isLogin">退出</el-button>
       </div>
     </div>
@@ -213,6 +213,7 @@
   data() {
     return {
       msgData:{msg1:132,msg2:321,show:false},
+      hotelName:"",
       province: [{
         value: '选项1',
         label: '广东省'
@@ -439,9 +440,10 @@
 //      return
 //    }
     this.search();
+    this.hotelName = this.$route.query.hotelName;
     console.log("路径" + this.$route.path)
-    console.log("路径" + this.$route.name)
-    console.log("路径" + this.$route.query.hotelId)
+    console.log("名称" + this.hotelName)
+    console.log("id" + this.$route.query.hotelId)
 
   },
 }
