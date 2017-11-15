@@ -96,7 +96,6 @@
     vertical-align: middle;
   }
   .box_middle .img_big{
-    width: 160px;
     height: 220px;
     padding: 50px;
     border: 2px solid #999;

@@ -63,8 +63,9 @@ export default {
         console.log(response);
         console.log('登陆成功！');
         var hotelId = response.data.hotelId;
+        var hotelName = response.data.hotelName;
         localStorage.setItem('loginData',JSON.stringify(self.ruleFormLogin));
-        self.$router.push({ path: 'Main/' , query:{hotelId:hotelId}})
+        self.$router.push({ path: 'Main/' , query:{hotelId:hotelId , hotelName:hotelName}})
       },function errFn(response) {
         self.$message({
           message: response.data.returnMessage,
